@@ -11,7 +11,7 @@ class SalesReport
       { rep: "Sam", region: "North East", revenue: "10_000" },
     ]
   end
-
+  
   def regional_revenue
     hash = Hash.new(0)
     for rep in sales
@@ -32,6 +32,10 @@ class SalesReport
   def rep_meets_sales_quota(rep)
     QUOTA < rep_sales(rep).map { |entry| entry.fetch(:revenue, "default_rehvenue").to_i }.sum
   end
+  
+  def eligible_for_bonus(rep) # a consolidated conditional
+    rep_meets_sales_quota(rep) && rep_average(rep) > 40_000
+  end
 end
 
 class SalesReportTest < Minitest::Test
@@ -50,5 +54,10 @@ class SalesReportTest < Minitest::Test
   def test_rep_meets_sales_quota
     assert SalesReport.new.rep_meets_sales_quota("Jamie")
     refute SalesReport.new.rep_meets_sales_quota("Sam")
+  end
+  
+  def test_eligible_for_bonus
+    assert SalesReport.new.eligible_for_bonus("Jamie")
+    refute SalesReport.new.eligible_for_bonus("Sam")
   end
 end

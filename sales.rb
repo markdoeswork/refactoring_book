@@ -8,7 +8,7 @@ class SalesReport
       { rep: "Charlie", region: "Midwest", revenue: "90_000" },
       { rep: "Sam", region: "North East", revenue: "10_000" },
     ]
-  end 
+  end
 
   def regional_revenue
     hash = Hash.new(0)
@@ -18,6 +18,11 @@ class SalesReport
 
     hash 
   end
+
+  def rep_average(rep)
+    rep_sales = sales.select { |sale| sale.fetch(:rep) == rep } # refrence the sales data 
+    rep_sales.map { |entry| entry.fetch(:revenue, "default_rehvenue").to_i }.sum / rep_sales.size
+  end
 end
 
 class SalesReportTest < Minitest::Test
@@ -26,5 +31,10 @@ class SalesReportTest < Minitest::Test
     actual = SalesReport.new.regional_revenue
 
     assert_equal expected, actual
+  end
+
+  def test_rep_average
+    sams_average = SalesReport.new.rep_average("Sam")
+    assert_equal 30000, sams_average
   end
 end

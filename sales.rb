@@ -34,7 +34,10 @@ class SalesReport
   end
   
   def eligible_for_bonus(rep) # a consolidated conditional
-    rep_meets_sales_quota(rep) && rep_average(rep) > 40_000
+    return if rep_sales(rep).map { |sale| sale.fetch(:region) == "Midwest" }.any? # a guard clause 
+    return unless rep_meets_sales_quota(rep) # a guard clause
+    return unless rep_average(rep) > 40_000 # a guard clause
+    true
   end
 end
 
@@ -58,6 +61,7 @@ class SalesReportTest < Minitest::Test
   
   def test_eligible_for_bonus
     assert SalesReport.new.eligible_for_bonus("Jamie")
+    refute SalesReport.new.eligible_for_bonus("Charlie")
     refute SalesReport.new.eligible_for_bonus("Sam")
   end
 end
